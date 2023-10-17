@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+	<meta charset="UTF-8">
+	<title>Registration</title>
+	<link rel="stylesheet" th:href="@{/static/login.css}">
+	
+	<div th:insert="~{parts/general :: head}"/>
+</head>
+<body>
+<div th:with="action=@{/registration}, usernameError=${usernameError}">
+	<div th:insert="~{parts/fragmentLogin :: fragmentLogin}"/>
+</div>
+<div th:insert="~{parts/general :: body}"/>
+</body>
+</html>

@@ -1,0 +1,10 @@
+    body {
+			background-image: url('/images/loginPage.png');
+			background-size: cover;
+			background-position: center;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			height: 100vh;
+			margin: 0;
+    }

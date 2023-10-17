@@ -1,0 +1,28 @@
+<div th:fragment="fragmentLogin" class="container d-flex justify-content-center align-items-center" style="height: 100vh;"
+     xmlns:th="http://www.w3.org/1999/xhtml">
+	<div class="card" style="width: 25rem;">
+		<div class="card-body" th:action="${action}">
+			<h5 class="card-title d-flex justify-content-center" th:text="${action == '/login' ? 'Login' : 'Registration'}">Text</h5>
+			<div th:if="${usernameError}">
+				<div th:text="${usernameError}"/>
+			</div>
+			<form th:method="POST" th:action="${action}">
+				<div class="form-group">
+					<label>User Name:</label>
+					<input type="text" class="form-control" name="username" placeholder="User name">
+				</div>
+				<div class="form-group">
+					<label>Password:</label>
+					<input type="password" class="form-control" name="password" placeholder="Password">
+				</div>
+				<div class="form-group d-flex justify-content-center">
+					<button class="btn btn-primary btn-md btn-block mt-2" type="submit"
+					        th:text="${action == '/login' ? 'Sign In' : 'Create'}">Button</button>
+				</div>
+				<div class="form-group d-flex justify-content-center">
+					<a th:if="${action == '/login'}" th:href="@{/registration}">Add new user</a>
+				</div>
+			</form>
+		</div>
+	</div>
+</div>
