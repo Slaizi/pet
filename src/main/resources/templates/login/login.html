@@ -8,7 +8,7 @@
 	<div th:insert="~{parts/general :: head}"/>
 </head>
 <body>
-<div th:with="action=@{/login}">
+<div th:with="action=@{/login}, errorMessage=${errorMessage}">
 	<div th:insert="~{parts/fragmentLogin :: fragmentLogin}"/>
 </div>
 <div th:insert="~{parts/general :: head}"/>

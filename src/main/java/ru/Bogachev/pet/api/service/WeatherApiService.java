@@ -1,4 +1,4 @@
-package ru.Bogachev.pet.service.api;
+package ru.Bogachev.pet.api.service;
 
 
 import com.fasterxml.jackson.core.type.TypeReference;

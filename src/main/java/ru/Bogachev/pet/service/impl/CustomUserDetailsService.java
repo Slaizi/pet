@@ -1,4 +1,4 @@
-package ru.Bogachev.pet.service;
+package ru.Bogachev.pet.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
