@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.Getter;
+import lombok.Setter;
 import ru.Bogachev.pet.api.entity.Clouds;
 import ru.Bogachev.pet.api.entity.Main;
 import ru.Bogachev.pet.api.entity.Weather;
@@ -14,6 +15,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
+@Setter
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class WeatherApiResponse {
     @JsonProperty("weather")

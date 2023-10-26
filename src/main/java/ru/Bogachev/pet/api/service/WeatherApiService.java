@@ -5,6 +5,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import ru.Bogachev.pet.api.response.LocationApiResponse;
 import ru.Bogachev.pet.api.response.WeatherApiResponse;
@@ -26,7 +27,7 @@ public class WeatherApiService {
     private static final String GEOCODING_API_URL_SUFFIX = "/geo/1.0/direct";
     private final HttpClient client = HttpClient.newHttpClient();
     private final ObjectMapper objectMapper = new ObjectMapper();
-
+    @Cacheable(cacheNames = "weatherApiResponse")
     public WeatherApiResponse getWeatherForLocation(LocationEntity location) {
         try {
             URI uri = buildUriForWeatherRequest(location);
