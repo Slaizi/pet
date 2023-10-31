@@ -1,15 +1,17 @@
 package ru.Bogachev.pet.domain.entity;
 
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import ru.Bogachev.pet.domain.entity.enums.Role;
 
-import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 
 @Getter
@@ -36,11 +38,11 @@ public class UserEntity implements UserDetails {
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "user")
     List<LocationEntity> locations;
-
-
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return getRoles();
+        return roles.stream()
+                    .map(role -> new SimpleGrantedAuthority(role.name()))
+                    .collect(Collectors.toSet());
     }
 
     @Override

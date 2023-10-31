@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+	<meta charset="UTF-8">
+	<title>User List</title>
+	<div th:insert="~{parts/general :: head}"/>
+</head>
+<body>
+<div th:with="object=${user}, action=@{/user/list}">
+	<div th:insert="~{parts/navbar :: navbar}"/>
+</div>
+<div class="container">
+	<table class="table table-hover">
+		<thead>
+		<tr>
+			<th scope="col">#id</th>
+			<th scope="col">User Name</th>
+			<th scope="col">Role</th>
+			<th></th>
+		</tr>
+		</thead>
+		<tbody th:each="user : ${users}">
+		<tr>
+			<th scope="row" th:text="${user.id}"></th>
+			<td th:text="${user.username}"></td>
+			<td th:text="${#strings.arrayJoin(user.roles, ', ')}"></td>
+			<td class="d-flex justify-content-end">
+				<a class="btn btn-outline-primary mr-2" th:href="@{/user/edit/{id}(id=${user.id})}">Edit</a>
+				<form th:method="POST" th:action="@{/user/delete/{id}(id=${user.id})}">
+					<button class="btn btn-outline-primary" type="submit">Delete</button>
+				</form>
+			</td>
+		</tr>
+		</tbody>
+	</table>
+</div>
+</div>
+<div th:insert="~{parts/general :: body}"/>
+</body>
+</html>

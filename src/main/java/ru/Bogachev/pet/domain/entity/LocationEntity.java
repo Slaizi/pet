@@ -1,9 +1,9 @@
 package ru.Bogachev.pet.domain.entity;
 
+import jakarta.persistence.*;
 import lombok.*;
 
-import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
+import java.io.Serializable;
 
 @Getter
 @Setter
@@ -12,7 +12,7 @@ import javax.validation.constraints.NotBlank;
 @Entity
 @Builder
 @EqualsAndHashCode
-public class LocationEntity {
+public class LocationEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

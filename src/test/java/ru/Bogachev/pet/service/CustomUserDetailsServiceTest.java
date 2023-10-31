@@ -10,6 +10,8 @@ import ru.Bogachev.pet.domain.entity.UserEntity;
 import ru.Bogachev.pet.domain.repository.UserRepository;
 import ru.Bogachev.pet.service.impl.CustomUserDetailsService;
 
+import java.util.Optional;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
@@ -27,7 +29,7 @@ public class CustomUserDetailsServiceTest {
         UserEntity user = new UserEntity();
         user.setUsername(username);
 
-        when(userRepository.findByUsername(username)).thenReturn(user);
+        when(userRepository.findByUsername(username)).thenReturn(Optional.of(user));
 
         UserDetails userDetails = customUserDetailsService.loadUserByUsername(username);
         assertEquals(username, userDetails.getUsername());

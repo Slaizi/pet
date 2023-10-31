@@ -4,6 +4,7 @@ import lombok.*;
 import ru.Bogachev.pet.domain.entity.enums.TimeOfDay;
 import ru.Bogachev.pet.domain.entity.enums.WeatherCondition;
 
+import java.io.Serializable;
 import java.util.Date;
 
 @Getter
@@ -11,7 +12,7 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class WeatherDto {
+public class WeatherDto implements Serializable {
     private WeatherCondition weatherCondition;
 
     private TimeOfDay timeOfDay;

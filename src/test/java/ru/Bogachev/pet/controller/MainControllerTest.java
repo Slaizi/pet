@@ -13,6 +13,7 @@ import org.springframework.ui.Model;
 import ru.Bogachev.pet.domain.dto.WeatherDto;
 import ru.Bogachev.pet.domain.entity.LocationEntity;
 import ru.Bogachev.pet.domain.entity.UserEntity;
+import ru.Bogachev.pet.service.LocationService;
 import ru.Bogachev.pet.service.UserService;
 
 import java.util.HashMap;
@@ -26,7 +27,7 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 public class MainControllerTest {
     @Mock
-    private UserService userService;
+    private LocationService locationService;
     @InjectMocks
     private MainController mainController;
 
@@ -37,7 +38,7 @@ public class MainControllerTest {
 
         Model model = new ExtendedModelMap();
 
-        when(userService.getWeatherDataForUserLocations(any(UserEntity.class))).thenReturn(locationWeatherMap);
+        when(locationService.getWeatherDataForUserLocations(any(UserEntity.class))).thenReturn(locationWeatherMap);
 
         String result = mainController.mainPage(user, model);
 
@@ -45,7 +46,7 @@ public class MainControllerTest {
         assertEquals(user, model.getAttribute("user"));
         assertEquals(locationWeatherMap, model.getAttribute("locationWeatherMap"));
 
-        verify(userService, times(1)).getWeatherDataForUserLocations(user);
+        verify(locationService, times(1)).getWeatherDataForUserLocations(user);
     }
     @Test
     public void testDeleteLocation () {
@@ -54,7 +55,7 @@ public class MainControllerTest {
 
         String result = mainController.deleteLocation(location);
 
-        verify(userService,times(1)).deleteUserLocation(location);
+        verify(locationService,times(1)).deleteUserLocation(location);
         assertEquals(expectedPath, result);
     }
     @Test
@@ -64,7 +65,7 @@ public class MainControllerTest {
         String locationName = "London";
 
         String result = mainController.cardWeather(user, locationName);
-        verify(userService, times(1)).addUserLocation(user, locationName);
+        verify(locationService, times(1)).addUserLocation(user, locationName);
 
         assertEquals(expectedPath, result);
     }

@@ -4,13 +4,16 @@ package ru.Bogachev.pet.api.service;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import ru.Bogachev.pet.api.response.LocationApiResponse;
 import ru.Bogachev.pet.api.response.WeatherApiResponse;
 import ru.Bogachev.pet.domain.entity.LocationEntity;
 
+import java.io.Serializable;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -19,7 +22,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class WeatherApiService {
+public class WeatherApiService implements Serializable {
     @Value("${api.key.weather}")
     private String APP_ID;
     private static final String BASE_API_URL = "https://api.openweathermap.org";
@@ -27,8 +30,16 @@ public class WeatherApiService {
     private static final String GEOCODING_API_URL_SUFFIX = "/geo/1.0/direct";
     private final HttpClient client = HttpClient.newHttpClient();
     private final ObjectMapper objectMapper = new ObjectMapper();
-    @Cacheable(cacheNames = "weatherApiResponse")
-    public WeatherApiResponse getWeatherForLocation(LocationEntity location) {
+    @Cacheable(value = "WeatherApiService::getWeatherForLocation", key = "#location.id")
+    public WeatherApiResponse getWeatherForLocationAndCached(LocationEntity location) {
+        return bodyGetWeatherLocation(location);
+    }
+    @CachePut(value = "WeatherApiService::getWeatherForLocation", key = "#location.id")
+    public WeatherApiResponse updateWeatherForLocationAndCache(LocationEntity location) {
+        return bodyGetWeatherLocation(location);
+    }
+
+    private WeatherApiResponse bodyGetWeatherLocation(LocationEntity location) {
         try {
             URI uri = buildUriForWeatherRequest(location);
             HttpRequest request = buildRequest(uri);

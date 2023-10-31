@@ -11,13 +11,14 @@ import ru.Bogachev.pet.api.entity.Weather;
 import ru.Bogachev.pet.api.entity.Wind;
 import ru.Bogachev.pet.api.response.utils.UnixTimestampDeserializer;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
 @Setter
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class WeatherApiResponse {
+public class WeatherApiResponse implements Serializable {
     @JsonProperty("weather")
     private List<Weather> weatherList;
 
@@ -39,7 +40,7 @@ public class WeatherApiResponse {
 
     @Getter
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public static class Sys {
+    public static class Sys implements Serializable{
         @JsonProperty("sunrise")
         @JsonDeserialize(using = UnixTimestampDeserializer.class)
         private LocalDateTime sunriseTime;

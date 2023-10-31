@@ -32,6 +32,10 @@
 										</svg>
 									</button>
 									<div class="dropdown-menu">
+										<form th:method="POST" th:action="@{/update}">
+											<input name="locationId" th:value="${item.key.id}" type="hidden">
+											<button class="dropdown-item" type="submit">Update</button>
+										</form>
 										<form th:method="POST" th:action="@{/}">
 											<input name="locationId" th:value="${item.key.id}" type="hidden">
 											<button class="dropdown-item" type="submit">Delete</button>
