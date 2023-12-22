@@ -1,18 +1,20 @@
 package ru.Bogachev.pet.service.impl;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 import ru.Bogachev.pet.api.response.LocationApiResponse;
 import ru.Bogachev.pet.api.response.WeatherApiResponse;
-import ru.Bogachev.pet.api.service.WeatherApiService;
-import ru.Bogachev.pet.domain.dto.WeatherDto;
-import ru.Bogachev.pet.domain.entity.LocationEntity;
-import ru.Bogachev.pet.domain.entity.UserEntity;
-import ru.Bogachev.pet.domain.mappers.WeatherMapper;
-import ru.Bogachev.pet.domain.repository.LocationRepository;
+import ru.Bogachev.pet.domain.exception.ResourceNotFoundException;
+import ru.Bogachev.pet.repository.LocationRepository;
+import ru.Bogachev.pet.service.UserService;
+import ru.Bogachev.pet.web.dto.location.LocationDto;
+import ru.Bogachev.pet.web.dto.weather.WeatherDto;
+import ru.Bogachev.pet.domain.location.Location;
+import ru.Bogachev.pet.domain.user.User;
+import ru.Bogachev.pet.web.mappers.LocationMapper;
+import ru.Bogachev.pet.web.mappers.WeatherMapper;
 import ru.Bogachev.pet.service.LocationService;
+import ru.Bogachev.pet.service.WeatherApiService;
 
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -23,51 +25,73 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class LocationServiceImpl implements LocationService {
     private final LocationRepository locationRepository;
+    private final UserService userService;
     private final WeatherApiService weatherApiService;
     private final WeatherMapper weatherMapper;
+    private final LocationMapper locationMapper;
 
 
     @Override
-    public Map<LocationEntity, WeatherDto> getWeatherDataForUserLocations(UserEntity user) {
-        List<LocationEntity> userLocations = locationRepository.findByUserId(user.getId());
-        Map<LocationEntity, WeatherDto> locationWeatherMap = new LinkedHashMap<>();
+    public Map<LocationDto, WeatherDto> getWeatherDataForUserLocations(User user) {
+        List<Location> userLocations = locationRepository.findAllLocationsByUserId(user.getId());
+        Map<LocationDto, WeatherDto> locationWeatherMap = new LinkedHashMap<>();
 
-        for (LocationEntity location : userLocations) {
+        for (Location location : userLocations) {
             WeatherApiResponse weather = getWeatherForLocationUser(location);
             WeatherDto weatherDto = weatherMapper.toDto(weather);
-            locationWeatherMap.put(location, weatherDto);
+            LocationDto locationDto = locationMapper.toDto(location);
+            locationWeatherMap.put(locationDto, weatherDto);
         }
         return locationWeatherMap;
     }
 
     @Override
-    public void addUserLocation(UserEntity user, String nameLocation) {
-        Optional<LocationEntity> existingLocation = locationRepository.findByNameAndUserId(nameLocation, user.getId());
-        if (existingLocation.isEmpty()) {
-            List<LocationApiResponse> listLocationResponse = weatherApiService.getLocationByName(nameLocation);
-            listLocationResponse.stream().map(e -> LocationEntity.builder()
-                                                                 .name(e.getName())
-                                                                 .latitude(e.getLatitude())
-                                                                 .longitude(e.getLongitude())
-                                                                 .user(user)
-                                                                 .build()).findFirst().ifPresent(locationRepository:: save);
+    public void addUserLocation(User user, String nameLocation) {
+        LocationApiResponse locationResponse = weatherApiService.getLocationByName(nameLocation).get(0);
+        if (locationResponse != null) {
+            Optional<Location> existingLocation = locationRepository.findByName(locationResponse.getName());
+            if (existingLocation.isEmpty()) {
+                Location location = new Location();
+                location.setName(locationResponse.getName());
+                location.setLatitude(locationResponse.getLatitude());
+                location.setLongitude(locationResponse.getLongitude());
+                locationRepository.save(user, location);
+            }
+            if (existingLocation.isPresent()) {
+            Location location = existingLocation.get();
+            Optional<Location> userHasTheLocation = locationRepository.findByUserIdAndLocationName(user.getId(), location.getName());
+                if (userHasTheLocation.isEmpty()) {
+                    locationRepository.saveUsersLocations(user.getId(), location.getId());
+                }
+            }
         }
     }
 
     @Override
-    public WeatherApiResponse getWeatherForLocationUser(LocationEntity location) {
-        return weatherApiService.getWeatherForLocationAndCached(location);
+    public WeatherApiResponse getWeatherForLocationUser(Location location) {
+        return weatherApiService.getWeatherForLocation(location);
     }
 
     @Override
-    public void updateWeatherForLocationUser(LocationEntity location) {
-        weatherApiService.updateWeatherForLocationAndCache(location);
+    public void updateWeatherForLocationUser(Long id) {
+        Location location = getLocationById(id);
+        weatherApiService.updateWeatherForLocation(location);
     }
 
 
     @Override
-    @CacheEvict(value = "WeatherApiService::getWeatherForLocation", key = "#location.id")
-    public void deleteUserLocation(LocationEntity location) {
-        locationRepository.delete(location);
+    public void deleteUserLocation(Long userId, Long locationId) {
+        List<User> usersByLocationId = userService.getAllUsersByLocationId(locationId);
+        if(usersByLocationId.size() == 1) {
+            locationRepository.delete(locationId);
+        }
+        else {
+            locationRepository.deleteUsersLocationsWhereUserIdAndLocationId(userId, locationId);
+        }
+
+    }
+    private Location getLocationById (Long id) {
+        return locationRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Location not found."));
     }
 }

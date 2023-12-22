@@ -1,0 +1,20 @@
+spring:
+  config:
+    import: optional:file:.env[.properties]
+
+  datasource:
+    url: jdbc:postgresql://localhost:${HOST}/${DATABASE_NAME}?currentSchema=${DATABASE_SCHEMA}
+    username: ${POSTGRES_USERNAME}
+    password: ${POSTGRES_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+  liquibase:
+    change-log: classpath:liquibase/db.changelog.yaml
+    enabled: true
+    default-schema: ${DATABASE_SCHEMA}
+
+weather:
+  url:
+    apiKey: ${WEATHER_API_KEY}
+    basicPath: https://api.openweathermap.org
+    weatherSuffix: /data/2.5/weather
+    geocodingSuffix: /geo/1.0/direct

@@ -1,17 +1,17 @@
 package ru.Bogachev.pet.service;
 
-import ru.Bogachev.pet.domain.dto.WeatherDto;
-import ru.Bogachev.pet.domain.entity.LocationEntity;
-import ru.Bogachev.pet.domain.entity.UserEntity;
-import ru.Bogachev.pet.domain.entity.enums.Role;
+import ru.Bogachev.pet.domain.user.User;
+import ru.Bogachev.pet.web.dto.user.UpdateUserDto;
+import ru.Bogachev.pet.web.dto.user.UserDto;
 
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 public interface UserService {
-    boolean registerUser(UserEntity user);
-    List<UserEntity> findAllUsers();
-    void userEdit(UserEntity user, String username, List<String> roles);
-    void deleteUser(UserEntity user);
+    User getUserById(Long id);
+    User getUserByUsername(String username);
+    List<UserDto> getAllUsers();
+    List<User> getAllUsersByLocationId(Long id);
+    void registerUser(User user);
+    void userEdit(Long id, UpdateUserDto updateUserDto);
+    void deleteUser(Long id);
 }
