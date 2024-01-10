@@ -12,10 +12,13 @@ import ru.Bogachev.pet.domain.user.User;
 import ru.Bogachev.pet.domain.user.Role;
 import ru.Bogachev.pet.service.UserService;
 import ru.Bogachev.pet.web.dto.user.UpdateUserDto;
+import ru.Bogachev.pet.web.dto.user.UserDetailsDto;
 import ru.Bogachev.pet.web.dto.user.UserDto;
+import ru.Bogachev.pet.web.mappers.UserDetailsMapper;
 import ru.Bogachev.pet.web.mappers.UserMapper;
 import ru.Bogachev.pet.web.security.UserDetails;
 
+import java.util.List;
 import java.util.Map;
 
 @Controller
@@ -25,6 +28,7 @@ public class UserController {
 
     private final UserService userService;
     private final UserMapper userMapper;
+    private final UserDetailsMapper userDetailsMapper;
 
     private static final String USER_EDIT_PATH = "/edit/{id}";
     private static final String USER_EDIT_PAGE = "/main/userEdit";
@@ -35,9 +39,10 @@ public class UserController {
     public String getUserList(
             @AuthenticationPrincipal UserDetails userDetails, Model model
     ) {
-        UserDto userDto = userMapper.toDtoWhereUserDetails(userDetails);
+        UserDetailsDto userDto = userDetailsMapper.toDto(userDetails);
+        List<UserDto> userDtoList = userMapper.toDto(userService.getAllUsers());
         model.addAttribute("user", userDto);
-        model.addAttribute("users", userService.getAllUsers());
+        model.addAttribute("users", userDtoList);
         return "/main/userList";
     }
     @GetMapping(USER_EDIT_PATH)

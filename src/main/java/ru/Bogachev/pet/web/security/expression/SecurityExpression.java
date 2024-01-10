@@ -6,8 +6,6 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import ru.Bogachev.pet.domain.user.Role;
-import ru.Bogachev.pet.service.UserService;
-import ru.Bogachev.pet.web.security.UserDetails;
 
 @Service("securityExpression")
 @RequiredArgsConstructor
@@ -19,9 +17,9 @@ public class SecurityExpression {
     }
 
     private boolean hasAnyRole(Authentication authentication, Role... roles) {
-        for(Role role : roles) {
+        for (Role role : roles) {
             SimpleGrantedAuthority authority = new SimpleGrantedAuthority(role.name());
-            if(authentication.getAuthorities().contains(authority)) {
+            if (authentication.getAuthorities().contains(authority)) {
                 return true;
             }
         }

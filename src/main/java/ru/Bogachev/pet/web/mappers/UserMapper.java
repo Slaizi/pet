@@ -1,13 +1,27 @@
 package ru.Bogachev.pet.web.mappers;
 
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import ru.Bogachev.pet.domain.user.User;
 import ru.Bogachev.pet.web.dto.user.UserDto;
-import ru.Bogachev.pet.web.security.UserDetails;
 
+import java.util.List;
 
-public interface UserMapper {
-    UserDto toDto(User user);
-    UserDto toDtoWhereUserDetails(UserDetails userDetails);
+@Mapper(componentModel = "spring")
+public interface UserMapper extends Mappable<User, UserDto> {
+    @Override
+    @Mapping(target = "roles", source = "roles")
+    UserDto toDto(User entity);
+
+    @Override
+    @Mapping(target = "roles", source = "roles")
+    List<UserDto> toDto(List<User> entity);
+
+    @Override
+    @Mapping(target = "roles", source = "roles")
     User toEntity(UserDto dto);
-    User toEntityWhereUserService(UserDetails userDetails);
+
+    @Override
+    @Mapping(target = "roles", source = "roles")
+    List<User> toEntity(List<UserDto> dto);
 }
