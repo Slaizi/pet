@@ -21,7 +21,7 @@ import java.util.Map;
 @RequestMapping("/registration")
 @RequiredArgsConstructor
 public class RegistrationController {
-    private static final String REGISTRATION_PAGE = "/login/registration";
+    private static final String REGISTRATION_PAGE = "login/registration";
 
     private final UserMapper userMapper;
     private final UserService userService;

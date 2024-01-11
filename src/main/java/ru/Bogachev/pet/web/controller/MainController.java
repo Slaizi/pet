@@ -17,6 +17,7 @@ import ru.Bogachev.pet.web.security.UserDetails;
 @RequiredArgsConstructor
 public class MainController {
     private static final String REDIRECT_BASE_PATH = "redirect:/";
+    private static final String MAIN_PAGE = "main/main";
 
     private final LocationService locationService;
     private final UserDetailsMapper userDetailsMapper;
@@ -31,7 +32,7 @@ public class MainController {
         model.addAttribute("user", userDto);
         User user = userService.getUserById(userDetails.getId());
         model.addAttribute("locationWeatherMap", locationService.getWeatherDataForUserLocations(user));
-        return "/main/main";
+        return MAIN_PAGE;
     }
 
     @DeleteMapping

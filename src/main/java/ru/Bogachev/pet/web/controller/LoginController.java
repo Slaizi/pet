@@ -13,7 +13,7 @@ import ru.Bogachev.pet.web.dto.user.UserDto;
 @RequestMapping("/login")
 @RequiredArgsConstructor
 public class LoginController {
-    private final static String LOGIN_PAGE = "/login/login";
+    private final static String LOGIN_PAGE = "login/login";
     @GetMapping
     public String login(
             @ModelAttribute("user") UserDto userDto,

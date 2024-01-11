@@ -31,7 +31,8 @@ public class UserController {
     private final UserDetailsMapper userDetailsMapper;
 
     private static final String USER_EDIT_PATH = "/edit/{id}";
-    private static final String USER_EDIT_PAGE = "/main/userEdit";
+    private static final String USER_EDIT_PAGE = "main/userEdit";
+    private static final String USER_LIST_PAGE = "main/userList";
     private static final String REDIRECT_USERS = "redirect:/users";
 
     @GetMapping
@@ -43,7 +44,7 @@ public class UserController {
         List<UserDto> userDtoList = userMapper.toDto(userService.getAllUsers());
         model.addAttribute("user", userDto);
         model.addAttribute("users", userDtoList);
-        return "/main/userList";
+        return USER_LIST_PAGE;
     }
     @GetMapping(USER_EDIT_PATH)
     @PreAuthorize("@securityExpression.canAccessUser()")
