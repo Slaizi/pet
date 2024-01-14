@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 import ru.Bogachev.pet.domain.location.Location;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Set;
 
@@ -11,10 +12,10 @@ import java.util.Set;
 @Data
 @Entity
 @Table(name = "users")
-public class User {
+public class User implements Serializable {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String username;
     private String password;

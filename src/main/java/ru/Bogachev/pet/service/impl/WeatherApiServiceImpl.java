@@ -11,7 +11,6 @@ import ru.Bogachev.pet.domain.location.Location;
 import ru.Bogachev.pet.service.WeatherApiService;
 import ru.Bogachev.pet.service.props.WeatherProperties;
 
-import java.io.Serializable;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -20,17 +19,14 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class WeatherApiServiceImpl implements WeatherApiService, Serializable {
+public class WeatherApiServiceImpl implements WeatherApiService {
 
     private final WeatherProperties weatherProperties;
     private final HttpClient client = HttpClient.newHttpClient();
     private final ObjectMapper objectMapper = new ObjectMapper();
+
     @Override
     public WeatherApiResponse getWeatherForLocation(Location location) {
-        return bodyGetWeatherLocation(location);
-    }
-    @Override
-    public WeatherApiResponse updateWeatherForLocation(Location location) {
         return bodyGetWeatherLocation(location);
     }
 
@@ -46,8 +42,9 @@ public class WeatherApiServiceImpl implements WeatherApiService, Serializable {
             throw new RuntimeException(e);
         }
     }
+
     @Override
-    public List<LocationApiResponse> getLocationByName (String nameOfLocation) {
+    public List<LocationApiResponse> getLocationByName(String nameOfLocation) {
         try {
             URI uri = buildUriForGeocodingRequest(nameOfLocation);
             HttpRequest request = buildRequest(uri);
@@ -63,22 +60,25 @@ public class WeatherApiServiceImpl implements WeatherApiService, Serializable {
             throw new RuntimeException(e);
         }
     }
+
     private static HttpRequest buildRequest(URI uri) {
         return HttpRequest.newBuilder(uri)
-                          .GET()
-                          .build();
+                .GET()
+                .build();
     }
+
     private URI buildUriForWeatherRequest(Location location) {
         return URI.create(weatherProperties.getBasicPath() + weatherProperties.getWeatherSuffix()
-                + "?lat=" + location.getLatitude()
-                + "&lon=" + location.getLongitude()
-                + "&appid=" + weatherProperties.getApiKey()
-                + "&units=" + "metric");
+                          + "?lat=" + location.getLatitude()
+                          + "&lon=" + location.getLongitude()
+                          + "&appid=" + weatherProperties.getApiKey()
+                          + "&units=" + "metric");
     }
+
     private URI buildUriForGeocodingRequest(String nameOfLocation) {
         return URI.create(weatherProperties.getBasicPath() + weatherProperties.getGeocodingSuffix()
-                + "?q=" + nameOfLocation
-                + "&limit=5"
-                + "&appid=" + weatherProperties.getApiKey());
+                          + "?q=" + nameOfLocation
+                          + "&limit=5"
+                          + "&appid=" + weatherProperties.getApiKey());
     }
 }

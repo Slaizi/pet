@@ -8,6 +8,5 @@ import java.util.List;
 
 public interface WeatherApiService {
     WeatherApiResponse getWeatherForLocation(Location location);
-    WeatherApiResponse updateWeatherForLocation(Location location);
     List<LocationApiResponse> getLocationByName(String nameOfLocation);
 }

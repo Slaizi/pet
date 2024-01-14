@@ -30,7 +30,7 @@ public class MainController {
     ) {
         UserDetailsDto userDto = userDetailsMapper.toDto(userDetails);
         model.addAttribute("user", userDto);
-        User user = userService.getUserById(userDetails.getId());
+        User user = userService.getById(userDetails.getId());
         model.addAttribute("locationWeatherMap", locationService.getWeatherDataForUserLocations(user));
         return MAIN_PAGE;
     }
@@ -40,16 +40,8 @@ public class MainController {
             @AuthenticationPrincipal UserDetails userDetails,
             @RequestParam(name = "locationId") Long locationId
     ) {
-        User user = userService.getUserById(userDetails.getId());
+        User user = userService.getById(userDetails.getId());
         locationService.deleteUserLocation(user.getId(), locationId);
-        return REDIRECT_BASE_PATH;
-    }
-
-    @PutMapping
-    public String updateLocation(
-            @RequestParam(name = "locationId") Long locationId
-    ) {
-        locationService.updateWeatherForLocationUser(locationId);
         return REDIRECT_BASE_PATH;
     }
 
@@ -59,7 +51,7 @@ public class MainController {
             @RequestParam(name = "search", required = false) String search
     ) {
         if (!search.isEmpty() && !search.matches(".*\\d.*")) {
-            User user = userService.getUserById(userDetails.getId());
+            User user = userService.getById(userDetails.getId());
             locationService.addUserLocation(user, search);
         }
         return REDIRECT_BASE_PATH;

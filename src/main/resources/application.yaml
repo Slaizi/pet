@@ -1,9 +1,16 @@
 spring:
   config:
     import: optional:file:.env[.properties]
-
+  cache:
+    type: redis
+    cache-name: redis-cache
+  data:
+    redis:
+      host: ${REDIS_HOST}
+      port: 6379
+      password: ${REDIS_PASSWORD}
   datasource:
-    url: jdbc:postgresql://localhost:${PORT}/${DATABASE_NAME}?currentSchema=${DATABASE_SCHEMA}
+    url: jdbc:postgresql://${POSTGRES_HOST}:${PORT}/${DATABASE_NAME}?currentSchema=${DATABASE_SCHEMA}
     username: ${POSTGRES_USERNAME}
     password: ${POSTGRES_PASSWORD}
     driver-class-name: org.postgresql.Driver
