@@ -13,7 +13,7 @@ public class UserDetailsService implements org.springframework.security.core.use
     private final UserService userService;
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userService.getUserByUsername(username);
+        User user = userService.getByUsername(username);
         return UserDetailsFactory.create(user);
     }
 }

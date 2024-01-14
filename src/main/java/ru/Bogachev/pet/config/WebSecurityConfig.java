@@ -24,25 +24,30 @@ import ru.Bogachev.pet.web.security.UserDetailsService;
 @RequiredArgsConstructor(onConstructor = @__(@Lazy))
 public class WebSecurityConfig {
     private final UserDetailsService userService;
+
     @Bean
-    public BCryptPasswordEncoder passwordEncoder () {
+    public BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder(8);
     }
+
     @Bean
-    public DaoAuthenticationProvider daoAuthenticationProvider () {
+    public DaoAuthenticationProvider daoAuthenticationProvider() {
         DaoAuthenticationProvider daoAuthenticationProvider = new DaoAuthenticationProvider();
         daoAuthenticationProvider.setPasswordEncoder(passwordEncoder());
         daoAuthenticationProvider.setUserDetailsService(userService);
         return daoAuthenticationProvider;
     }
+
     @Bean
-    public HttpMethodFilter httpFilter () {
+    public HttpMethodFilter httpFilter() {
         return new HttpMethodFilter();
     }
+
     @Bean
-    public AuthenticationManager authenticationManager (AuthenticationConfiguration authenticationConfiguration) throws Exception {
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
     }
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
@@ -60,9 +65,7 @@ public class WebSecurityConfig {
                 .logout(l -> l.logoutSuccessUrl("/login"))
                 .exceptionHandling(exception -> exception
                         .authenticationEntryPoint(
-                                (request, response, authException) -> {
-                                    response.sendRedirect("/login");
-                                }
+                                (request, response, authException) -> response.sendRedirect("/login")
                         )
                         .accessDeniedHandler(
                                 (request, response, accessDeniedException) -> {

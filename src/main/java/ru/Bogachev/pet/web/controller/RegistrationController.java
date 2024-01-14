@@ -31,7 +31,7 @@ public class RegistrationController {
         return REGISTRATION_PAGE;
     }
     @PostMapping
-    public String registration (@ModelAttribute(name = "user") @Valid UserDto userDto,
+    public String registration (@Valid UserDto userDto,
                                 BindingResult bindingResult,
                                 Model model) {
         if (bindingResult.hasErrors()) {
@@ -39,9 +39,9 @@ public class RegistrationController {
             model.mergeAttributes(errorMap);
             return REGISTRATION_PAGE;
         }
-        User user = userMapper.toEntity(userDto);
         try {
-            userService.registerUser(user);
+            User user = userService.registerUser(userDto);
+            model.addAttribute("user", userMapper.toDto(user));
             return "redirect:/login";
         } catch (ResourceNotFoundException e) {
             model.addAttribute("errorMessage", e.getMessage());

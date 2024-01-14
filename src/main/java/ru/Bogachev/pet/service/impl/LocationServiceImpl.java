@@ -1,6 +1,8 @@
 package ru.Bogachev.pet.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.Bogachev.pet.api.response.LocationApiResponse;
@@ -34,6 +36,19 @@ public class LocationServiceImpl implements LocationService {
 
 
     @Override
+    @Cacheable(
+            value = "LocationService::getById",
+            key = "#id"
+    )
+    @Transactional(readOnly = true)
+    public Location getById(Long id) {
+        return locationRepository.findById(id)
+                .orElseThrow(
+                        () -> new ResourceNotFoundException("Location not found.")
+                );
+    }
+
+    @Override
     public Map<LocationDto, WeatherDto> getWeatherDataForUserLocations(User user) {
         List<Location> userLocations = locationRepository.findAllByUserId(user.getId());
         Map<LocationDto, WeatherDto> locationWeatherMap = new LinkedHashMap<>();
@@ -46,52 +61,61 @@ public class LocationServiceImpl implements LocationService {
         }
         return locationWeatherMap;
     }
-    @Transactional(readOnly = true)
-    private Location getLocationById(Long id) {
-        return locationRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Location not found."));
-    }
 
     @Override
     @Transactional
     public void addUserLocation(User user, String nameLocation) {
         LocationApiResponse locationResponse = weatherApiService.getLocationByName(nameLocation).get(0);
         if (locationResponse != null) {
-            Optional<Location> existingLocation = locationRepository.findByName(locationResponse.getName());
-            if (existingLocation.isEmpty()) {
-                Location location = new Location();
-                location.setName(locationResponse.getName());
-                location.setLatitude(locationResponse.getLatitude());
-                location.setLongitude(locationResponse.getLongitude());
-                locationRepository.save(location);
-                locationRepository.assignLocation(user.getId(), location.getId());
-            }
-            if (existingLocation.isPresent()) {
-                Location location = existingLocation.get();
-                boolean userHasTheLocation = locationRepository.locationHasUser(user.getId(), location.getId());
-                if (!userHasTheLocation) {
-                    locationRepository.assignLocation(user.getId(), location.getId());
-                }
-            }
+            handleLocationResponse(user, locationResponse);
+        }
+    }
+
+    @Transactional
+    private void handleLocationResponse(User user, LocationApiResponse locationResponse) {
+        Optional<Location> existingLocation = locationRepository.findByName(locationResponse.getName());
+        if (existingLocation.isEmpty()) {
+            Location location = saveLocation(locationResponse);
+            locationRepository.assignLocation(user.getId(), location.getId());
+        }
+        if(existingLocation.isPresent()) {
+            Location location = existingLocation.get();
+            handleExistingLocation(user, location);
+        }
+    }
+    @Cacheable(
+            value = "LocationService::getById",
+            key = "#location.id"
+    )
+    @Transactional
+    private Location saveLocation(LocationApiResponse locationResponse) {
+        Location location = new Location();
+        location.setName(locationResponse.getName());
+        location.setLatitude(locationResponse.getLatitude());
+        location.setLongitude(locationResponse.getLongitude());
+        return locationRepository.save(location);
+    }
+
+    @Transactional
+    private void handleExistingLocation(User user, Location location) {
+        boolean userHasTheLocation = locationRepository.locationHasUser(user.getId(), location.getId());
+        if (!userHasTheLocation) {
+            locationRepository.assignLocation(user.getId(), location.getId());
         }
     }
 
     @Override
-    @Transactional(readOnly = true)
-    public void updateWeatherForLocationUser(Long id) {
-        Location location = getLocationById(id);
-        weatherApiService.updateWeatherForLocation(location);
-    }
-
-
-    @Override
+    @CacheEvict(
+            value = "LocationService::getById",
+            key = "#id"
+    )
     @Transactional
-    public void deleteUserLocation(Long userId, Long locationId) {
-        List<User> usersByLocationId = userService.getAllUsersByLocationId(locationId);
+    public void deleteUserLocation(Long userId, Long id) {
+        List<User> usersByLocationId = userService.getAllUsersByLocationId(id);
         if (usersByLocationId.size() == 1) {
-            locationRepository.deleteById(locationId);
+            locationRepository.deleteById(id);
         } else {
-            locationRepository.removeLocation(userId, locationId);
+            locationRepository.removeLocation(userId, id);
         }
 
     }

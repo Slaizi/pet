@@ -16,6 +16,7 @@ import ru.Bogachev.pet.web.dto.user.UserDetailsDto;
 import ru.Bogachev.pet.web.dto.user.UserDto;
 import ru.Bogachev.pet.web.mappers.UserDetailsMapper;
 import ru.Bogachev.pet.web.mappers.UserMapper;
+import ru.Bogachev.pet.web.mappers.UserUpdateMapper;
 import ru.Bogachev.pet.web.security.UserDetails;
 
 import java.util.List;
@@ -29,6 +30,7 @@ public class UserController {
     private final UserService userService;
     private final UserMapper userMapper;
     private final UserDetailsMapper userDetailsMapper;
+    private final UserUpdateMapper userUpdateMapper;
 
     private static final String USER_EDIT_PATH = "/edit/{id}";
     private static final String USER_EDIT_PAGE = "main/userEdit";
@@ -52,7 +54,7 @@ public class UserController {
             @PathVariable Long id,
             Model model
     ) {
-        User user = userService.getUserById(id);
+        User user = userService.getById(id);
         model.addAttribute("user", userMapper.toDto(user));
         model.addAttribute("roles", Role.values());
         return USER_EDIT_PAGE;
@@ -73,13 +75,13 @@ public class UserController {
             model.addAttribute("roles", Role.values());
             return USER_EDIT_PAGE;
         }
-        userService.userEdit(id, updateUserDto);
+        userService.userEdit(id, userUpdateMapper.toEntity(updateUserDto));
         return REDIRECT_USERS;
     }
     @DeleteMapping("/{id}")
     @PreAuthorize("@securityExpression.canAccessUser()")
     public String deleteUser(
-            @PathVariable Long id
+            @PathVariable User id
     ) {
         userService.deleteUser(id);
         return REDIRECT_USERS;

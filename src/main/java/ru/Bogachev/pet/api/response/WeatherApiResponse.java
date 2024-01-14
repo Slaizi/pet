@@ -18,7 +18,7 @@ import java.util.List;
 @Getter
 @Setter
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class WeatherApiResponse implements Serializable {
+public class WeatherApiResponse {
     @JsonProperty("weather")
     private List<Weather> weatherList;
 
