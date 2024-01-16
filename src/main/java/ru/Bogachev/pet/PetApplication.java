@@ -9,7 +9,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @EnableCaching
 @EnableTransactionManagement
 public class PetApplication {
-	public static void main(String[] args) {
-		SpringApplication.run(PetApplication.class, args);
-	}
+    public static void main(final String[] args) {
+        SpringApplication.run(PetApplication.class, args);
+    }
 }

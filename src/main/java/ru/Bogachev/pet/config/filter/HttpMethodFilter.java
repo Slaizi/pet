@@ -10,14 +10,19 @@ import java.io.IOException;
 
 public class HttpMethodFilter extends OncePerRequestFilter {
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+    protected void doFilterInternal(
+            final HttpServletRequest request,
+            final HttpServletResponse response,
+            final FilterChain filterChain
+    ) throws ServletException, IOException {
         String method = request.getParameter("_method");
         if (method != null) {
-            String originalMethod = request.getMethod();
             String newMethod = method.toUpperCase();
-
-            request = new HttpMethodRequestWrapper(request, newMethod);
+            HttpMethodRequestWrapper modifiedRequest =
+                    new HttpMethodRequestWrapper(request, newMethod);
+            filterChain.doFilter(modifiedRequest, response);
+        } else {
+            filterChain.doFilter(request, response);
         }
-        filterChain.doFilter(request, response);
     }
 }

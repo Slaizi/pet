@@ -7,7 +7,11 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
 import ru.Bogachev.pet.domain.user.User;
 import ru.Bogachev.pet.domain.user.Role;
 import ru.Bogachev.pet.service.UserService;
@@ -36,11 +40,14 @@ public class UserController {
     private static final String USER_EDIT_PAGE = "main/userEdit";
     private static final String USER_LIST_PAGE = "main/userList";
     private static final String REDIRECT_USERS = "redirect:/users";
+    private static final String SECURITY_EXPRESSION =
+            "@securityExpression.canAccessUser()";
 
     @GetMapping
-    @PreAuthorize("@securityExpression.canAccessUser()")
+    @PreAuthorize(SECURITY_EXPRESSION)
     public String getUserList(
-            @AuthenticationPrincipal UserDetails userDetails, Model model
+            @AuthenticationPrincipal final UserDetails userDetails,
+            final Model model
     ) {
         UserDetailsDto userDto = userDetailsMapper.toDto(userDetails);
         List<UserDto> userDtoList = userMapper.toDto(userService.getAllUsers());
@@ -49,10 +56,10 @@ public class UserController {
         return USER_LIST_PAGE;
     }
     @GetMapping(USER_EDIT_PATH)
-    @PreAuthorize("@securityExpression.canAccessUser()")
+    @PreAuthorize(SECURITY_EXPRESSION)
     public String getUserFormForEdit(
-            @PathVariable Long id,
-            Model model
+            @PathVariable final Long id,
+            final Model model
     ) {
         User user = userService.getById(id);
         model.addAttribute("user", userMapper.toDto(user));
@@ -61,27 +68,31 @@ public class UserController {
     }
 
     @PutMapping(USER_EDIT_PATH)
-    @PreAuthorize("@securityExpression.canAccessUser()")
-    public String updateUser (
-            @PathVariable Long id,
-            @Valid UpdateUserDto updateUserDto,
-            BindingResult bindingResult,
-            Model model
+    @PreAuthorize(SECURITY_EXPRESSION)
+    public String updateUser(
+            @PathVariable final Long id,
+            @Valid final UpdateUserDto updateUserDto,
+            final BindingResult bindingResult,
+            final Model model
     ) {
-        if(bindingResult.hasErrors()) {
-            Map<String, String> mapErrors = ControllerUtils.getErrors(bindingResult);
+        if (bindingResult.hasErrors()) {
+            Map<String, String> mapErrors =
+                    ControllerUtils.getErrors(bindingResult);
             model.mergeAttributes(mapErrors);
             model.addAttribute("user", updateUserDto);
             model.addAttribute("roles", Role.values());
             return USER_EDIT_PAGE;
         }
-        userService.userEdit(id, userUpdateMapper.toEntity(updateUserDto));
+        userService.userEdit(
+                id,
+                userUpdateMapper.toEntity(updateUserDto)
+        );
         return REDIRECT_USERS;
     }
     @DeleteMapping("/{id}")
-    @PreAuthorize("@securityExpression.canAccessUser()")
+    @PreAuthorize(SECURITY_EXPRESSION)
     public String deleteUser(
-            @PathVariable User id
+            @PathVariable final User id
     ) {
         userService.deleteUser(id);
         return REDIRECT_USERS;

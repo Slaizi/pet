@@ -8,7 +8,8 @@ import java.util.Collection;
 
 @Data
 @AllArgsConstructor
-public class UserDetails implements org.springframework.security.core.userdetails.UserDetails {
+public class UserDetails implements
+        org.springframework.security.core.userdetails.UserDetails {
     private Long id;
     private String username;
     private String password;

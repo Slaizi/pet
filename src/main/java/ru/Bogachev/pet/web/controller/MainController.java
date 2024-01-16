@@ -4,7 +4,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import ru.Bogachev.pet.domain.user.User;
 import ru.Bogachev.pet.service.LocationService;
 import ru.Bogachev.pet.service.UserService;
@@ -25,20 +29,21 @@ public class MainController {
 
     @GetMapping
     public String getMainPage(
-            @AuthenticationPrincipal UserDetails userDetails,
-            Model model
+            @AuthenticationPrincipal final UserDetails userDetails,
+            final Model model
     ) {
         UserDetailsDto userDto = userDetailsMapper.toDto(userDetails);
         model.addAttribute("user", userDto);
         User user = userService.getById(userDetails.getId());
-        model.addAttribute("locationWeatherMap", locationService.getWeatherDataForUserLocations(user));
+        model.addAttribute("locationWeatherMap",
+                locationService.getWeatherDataForUserLocations(user));
         return MAIN_PAGE;
     }
 
     @DeleteMapping
     public String deleteLocation(
-            @AuthenticationPrincipal UserDetails userDetails,
-            @RequestParam(name = "locationId") Long locationId
+            @AuthenticationPrincipal final UserDetails userDetails,
+            @RequestParam(name = "locationId") final Long locationId
     ) {
         User user = userService.getById(userDetails.getId());
         locationService.deleteUserLocation(user.getId(), locationId);
@@ -47,8 +52,8 @@ public class MainController {
 
     @PostMapping
     public String cardWeather(
-            @AuthenticationPrincipal UserDetails userDetails,
-            @RequestParam(name = "search", required = false) String search
+            @AuthenticationPrincipal final UserDetails userDetails,
+            @RequestParam(name = "search", required = false) final String search
     ) {
         if (!search.isEmpty() && !search.matches(".*\\d.*")) {
             User user = userService.getById(userDetails.getId());

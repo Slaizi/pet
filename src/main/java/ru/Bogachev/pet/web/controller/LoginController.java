@@ -13,15 +13,17 @@ import ru.Bogachev.pet.web.dto.user.UserDto;
 @RequestMapping("/login")
 @RequiredArgsConstructor
 public class LoginController {
-    private final static String LOGIN_PAGE = "login/login";
+    private static final String LOGIN_PAGE = "login/login";
+
     @GetMapping
     public String login(
-            @ModelAttribute("user") UserDto userDto,
-            @RequestParam(name = "error", required = false) String error,
-            Model model
+            @ModelAttribute("user") final UserDto userDto,
+            @RequestParam(name = "error", required = false) final String error,
+            final Model model
     ) {
-        if(error != null)
+        if (error != null) {
             model.addAttribute("errorMessage", "Invalid username or password");
+        }
         return LOGIN_PAGE;
     }
 }
