@@ -9,7 +9,9 @@ public enum WeatherCondition {
     CLEAR,
     CLOUDS,
     UNDEFINED;
-    public static WeatherCondition getWeatherConditionForCode(Integer code) {
+    public static WeatherCondition getWeatherConditionForCode(
+            final Integer code
+    ) {
         String codeStr = String.valueOf(code);
 
         if (codeStr.startsWith("2")) {

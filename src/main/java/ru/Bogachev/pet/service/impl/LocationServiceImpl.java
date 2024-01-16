@@ -41,20 +41,25 @@ public class LocationServiceImpl implements LocationService {
             key = "#id"
     )
     @Transactional(readOnly = true)
-    public Location getById(Long id) {
+    public Location getById(final Long id) {
         return locationRepository.findById(id)
-                .orElseThrow(
-                        () -> new ResourceNotFoundException("Location not found.")
+                .orElseThrow(() ->
+                        new ResourceNotFoundException(
+                                "Location not found."
+                        )
                 );
     }
 
     @Override
-    public Map<LocationDto, WeatherDto> getWeatherDataForUserLocations(User user) {
-        List<Location> userLocations = locationRepository.findAllByUserId(user.getId());
+    public Map<LocationDto, WeatherDto>
+    getWeatherDataForUserLocations(final User user) {
+        List<Location> userLocations = locationRepository
+                .findAllByUserId(user.getId());
         Map<LocationDto, WeatherDto> locationWeatherMap = new LinkedHashMap<>();
 
         for (Location location : userLocations) {
-            WeatherApiResponse weather = weatherApiService.getWeatherForLocation(location);
+            WeatherApiResponse weather = weatherApiService
+                    .getWeatherForLocation(location);
             WeatherDto weatherDto = weatherMapper.toDto(weather);
             LocationDto locationDto = locationMapper.toDto(location);
             locationWeatherMap.put(locationDto, weatherDto);
@@ -64,21 +69,30 @@ public class LocationServiceImpl implements LocationService {
 
     @Override
     @Transactional
-    public void addUserLocation(User user, String nameLocation) {
-        LocationApiResponse locationResponse = weatherApiService.getLocationByName(nameLocation).get(0);
+    public void addUserLocation(
+            final User user,
+            final String nameLocation
+    ) {
+        LocationApiResponse locationResponse = weatherApiService
+                .getLocationByName(nameLocation).get(0);
         if (locationResponse != null) {
             handleLocationResponse(user, locationResponse);
         }
     }
 
     @Transactional
-    private void handleLocationResponse(User user, LocationApiResponse locationResponse) {
-        Optional<Location> existingLocation = locationRepository.findByName(locationResponse.getName());
+    private void handleLocationResponse(
+            final User user,
+            final LocationApiResponse locationResponse
+    ) {
+        Optional<Location> existingLocation = locationRepository
+                .findByName(locationResponse.getName());
         if (existingLocation.isEmpty()) {
             Location location = saveLocation(locationResponse);
-            locationRepository.assignLocation(user.getId(), location.getId());
+            locationRepository
+                    .assignLocation(user.getId(), location.getId());
         }
-        if(existingLocation.isPresent()) {
+        if (existingLocation.isPresent()) {
             Location location = existingLocation.get();
             handleExistingLocation(user, location);
         }
@@ -88,7 +102,7 @@ public class LocationServiceImpl implements LocationService {
             key = "#location.id"
     )
     @Transactional
-    private Location saveLocation(LocationApiResponse locationResponse) {
+    private Location saveLocation(final LocationApiResponse locationResponse) {
         Location location = new Location();
         location.setName(locationResponse.getName());
         location.setLatitude(locationResponse.getLatitude());
@@ -97,10 +111,15 @@ public class LocationServiceImpl implements LocationService {
     }
 
     @Transactional
-    private void handleExistingLocation(User user, Location location) {
-        boolean userHasTheLocation = locationRepository.locationHasUser(user.getId(), location.getId());
+    private void handleExistingLocation(
+            final User user,
+            final Location location
+    ) {
+        boolean userHasTheLocation = locationRepository
+                .locationHasUser(user.getId(), location.getId());
         if (!userHasTheLocation) {
-            locationRepository.assignLocation(user.getId(), location.getId());
+            locationRepository
+                    .assignLocation(user.getId(), location.getId());
         }
     }
 
@@ -110,7 +129,10 @@ public class LocationServiceImpl implements LocationService {
             key = "#id"
     )
     @Transactional
-    public void deleteUserLocation(Long userId, Long id) {
+    public void deleteUserLocation(
+            final Long userId,
+            final Long id
+    ) {
         List<User> usersByLocationId = userService.getAllUsersByLocationId(id);
         if (usersByLocationId.size() == 1) {
             locationRepository.deleteById(id);

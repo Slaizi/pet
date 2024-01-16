@@ -26,17 +26,21 @@ public class WeatherApiServiceImpl implements WeatherApiService {
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
-    public WeatherApiResponse getWeatherForLocation(Location location) {
+    public WeatherApiResponse getWeatherForLocation(final Location location) {
         return bodyGetWeatherLocation(location);
     }
 
-    private WeatherApiResponse bodyGetWeatherLocation(Location location) {
+    private WeatherApiResponse bodyGetWeatherLocation(final Location location) {
         try {
             URI uri = buildUriForWeatherRequest(location);
             HttpRequest request = buildRequest(uri);
-            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            HttpResponse<String> response =
+                    client.send(request, HttpResponse.BodyHandlers.ofString());
 
-            return objectMapper.readValue(response.body(), WeatherApiResponse.class);
+            return objectMapper.readValue(
+                    response.body(),
+                    WeatherApiResponse.class
+            );
 
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -44,11 +48,14 @@ public class WeatherApiServiceImpl implements WeatherApiService {
     }
 
     @Override
-    public List<LocationApiResponse> getLocationByName(String nameOfLocation) {
+    public List<LocationApiResponse> getLocationByName(
+            final String nameOfLocation
+    ) {
         try {
             URI uri = buildUriForGeocodingRequest(nameOfLocation);
             HttpRequest request = buildRequest(uri);
-            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            HttpResponse<String> response =
+                    client.send(request, HttpResponse.BodyHandlers.ofString());
 
             return objectMapper.readValue(
                     response.body(),
@@ -61,22 +68,24 @@ public class WeatherApiServiceImpl implements WeatherApiService {
         }
     }
 
-    private static HttpRequest buildRequest(URI uri) {
+    private static HttpRequest buildRequest(final URI uri) {
         return HttpRequest.newBuilder(uri)
                 .GET()
                 .build();
     }
 
-    private URI buildUriForWeatherRequest(Location location) {
-        return URI.create(weatherProperties.getBasicPath() + weatherProperties.getWeatherSuffix()
+    private URI buildUriForWeatherRequest(final Location location) {
+        return URI.create(weatherProperties.getBasicPath()
+                          + weatherProperties.getWeatherSuffix()
                           + "?lat=" + location.getLatitude()
                           + "&lon=" + location.getLongitude()
                           + "&appid=" + weatherProperties.getApiKey()
                           + "&units=" + "metric");
     }
 
-    private URI buildUriForGeocodingRequest(String nameOfLocation) {
-        return URI.create(weatherProperties.getBasicPath() + weatherProperties.getGeocodingSuffix()
+    private URI buildUriForGeocodingRequest(final String nameOfLocation) {
+        return URI.create(weatherProperties.getBasicPath()
+                          + weatherProperties.getGeocodingSuffix()
                           + "?q=" + nameOfLocation
                           + "&limit=5"
                           + "&appid=" + weatherProperties.getApiKey());

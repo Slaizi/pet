@@ -30,10 +30,11 @@ public class UserServiceImpl implements UserService {
     @Cacheable(
             value = "UserService::getById",
             key = "#id")
-    public User getById(Long id) {
+    public User getById(final Long id) {
         return userRepository.findById(id)
-                .orElseThrow(
-                        () -> new ResourceNotFoundException("User not found.")
+                .orElseThrow(() -> new ResourceNotFoundException(
+                                "User not found."
+                        )
                 );
     }
 
@@ -43,11 +44,14 @@ public class UserServiceImpl implements UserService {
             value = "UserService::getByUsername",
             key = "#username"
     )
-    public User getByUsername(String username) {
+    public User getByUsername(final String username) {
         return userRepository.findByUsername(username)
-                .orElseThrow(() -> new ResourceNotFoundException(
-                        String.format("User not found with username %s", username)
-                ));
+                .orElseThrow(() ->
+                        new ResourceNotFoundException(
+                                String.format(
+                                        "User not found with username %s",
+                                        username)
+                        ));
     }
 
     @Override
@@ -58,15 +62,17 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<User> getAllUsersByLocationId(Long id) {
+    public List<User> getAllUsersByLocationId(final Long id) {
         return userRepository.findAllByLocationId(id);
     }
 
     @Override
     @Transactional
-    public User registerUser(UserDto dto) {
+    public User registerUser(final UserDto dto) {
         if (userRepository.findByUsername(dto.getUsername()).isPresent()) {
-            throw new ResourceNotFoundException("User already exists!");
+            throw new ResourceNotFoundException(
+                    "User already exists!"
+            );
         }
         User user = new User();
         user.setUsername(dto.getUsername());
@@ -84,7 +90,7 @@ public class UserServiceImpl implements UserService {
                     value = "UserService::getByUsername",
                     key = "#user.username")
     })
-    private User cacheUser(User user) {
+    private User cacheUser(final User user) {
         return user;
     }
 
@@ -98,10 +104,15 @@ public class UserServiceImpl implements UserService {
                     value = "UserService::getByUsername",
                     key = "#user.username")
     })
-    public void userEdit(Long id, User user) {
+    public void userEdit(
+            final Long id,
+            final User user
+    ) {
         User userInBase = userRepository.findById(id)
-                .orElseThrow(
-                        () -> new ResourceNotFoundException("User not found.")
+                .orElseThrow(() ->
+                        new ResourceNotFoundException(
+                                "User not found."
+                        )
                 );
         user.setPassword(userInBase.getPassword());
         Set<Role> roles = user.getRoles();
@@ -122,7 +133,7 @@ public class UserServiceImpl implements UserService {
                     value = "UserService::getByUsername",
                     key = "#user.username")
     })
-    public void deleteUser(User user) {
+    public void deleteUser(final User user) {
         userRepository.deleteById(user.getId());
     }
 }

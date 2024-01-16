@@ -40,7 +40,7 @@ public class WeatherApiResponse {
 
     @Getter
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public static class Sys implements Serializable{
+    public static class Sys implements Serializable {
         @JsonProperty("sunrise")
         @JsonDeserialize(using = UnixTimestampDeserializer.class)
         private LocalDateTime sunriseTime;

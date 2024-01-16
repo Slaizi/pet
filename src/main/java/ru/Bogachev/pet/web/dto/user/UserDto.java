@@ -14,12 +14,21 @@ public class UserDto {
 
     private Long id;
 
-    @NotNull(message = "Email cannot be empty.")
-    @Email(message = "Email is not correct")
-    @Length(max = 255, message = "Email length must be smaller than 255 symbols.")
+    @NotNull(
+            message = "Email cannot be empty."
+    )
+    @Email(
+            message = "Email is not correct"
+    )
+    @Length(
+            max = 255,
+            message = "Email length must be smaller than 255 symbols."
+    )
     private String username;
 
-    @NotNull(message = "Password cannot be empty.")
+    @NotNull(
+            message = "Password cannot be empty."
+    )
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
 

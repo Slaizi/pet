@@ -7,7 +7,7 @@ public enum TimeOfDay {
     NIGHT,
     UNDEFINED;
 
-    public static TimeOfDay getTimeOfDayForTime(LocalDateTime time) {
+    public static TimeOfDay getTimeOfDayForTime(final LocalDateTime time) {
         if (time == null) {
             return UNDEFINED;
         }

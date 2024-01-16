@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class UserDetailsFactory {
-    public static UserDetails create (User user) {
+    public static UserDetails create(final User user) {
         return new UserDetails(
                 user.getId(),
                 user.getUsername(),
@@ -19,7 +19,9 @@ public class UserDetailsFactory {
         );
     }
 
-    private static List<GrantedAuthority> mapToGrantedAuthority(List<Role> roles) {
+    private static List<GrantedAuthority> mapToGrantedAuthority(
+           final List<Role> roles
+    ) {
         return roles.stream()
                 .map(Enum::name)
                 .map(SimpleGrantedAuthority::new)

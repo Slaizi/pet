@@ -32,7 +32,8 @@ public class WebSecurityConfig {
 
     @Bean
     public DaoAuthenticationProvider daoAuthenticationProvider() {
-        DaoAuthenticationProvider daoAuthenticationProvider = new DaoAuthenticationProvider();
+        DaoAuthenticationProvider daoAuthenticationProvider =
+                new DaoAuthenticationProvider();
         daoAuthenticationProvider.setPasswordEncoder(passwordEncoder());
         daoAuthenticationProvider.setUserDetailsService(userService);
         return daoAuthenticationProvider;
@@ -44,16 +45,28 @@ public class WebSecurityConfig {
     }
 
     @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
+    public AuthenticationManager authenticationManager(
+            final AuthenticationConfiguration authenticationConfiguration
+    ) throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(
+            final HttpSecurity http
+    ) throws Exception {
         http
-                .addFilterBefore(httpFilter(), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(
+                        httpFilter(),
+                        UsernamePasswordAuthenticationFilter.class
+                )
                 .authorizeHttpRequests((requests) -> requests
-                        .requestMatchers("/static/**", "/images/**", "/registration").permitAll()
+                        .requestMatchers(
+                                "/static/**",
+                                "/images/**",
+                                "/registration"
+                        )
+                        .permitAll()
                         .anyRequest().authenticated()
                 )
                 .formLogin((form) -> form
@@ -65,11 +78,14 @@ public class WebSecurityConfig {
                 .logout(l -> l.logoutSuccessUrl("/login"))
                 .exceptionHandling(exception -> exception
                         .authenticationEntryPoint(
-                                (request, response, authException) -> response.sendRedirect("/login")
+                                (request, response, authException) ->
+                                        response.sendRedirect("/login")
                         )
                         .accessDeniedHandler(
                                 (request, response, accessDeniedException) -> {
-                                    response.setStatus(HttpStatus.FORBIDDEN.value());
+                                    response.setStatus(
+                                            HttpStatus.FORBIDDEN.value()
+                                    );
                                     response.getWriter().write("Unauthorized.");
                                 }
                         )

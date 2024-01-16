@@ -1,6 +1,7 @@
 package ru.Bogachev.pet.web.dto.weather;
 
-import lombok.*;
+import lombok.Data;
+import lombok.Builder;
 
 import java.io.Serializable;
 import java.util.Date;

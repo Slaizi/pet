@@ -10,12 +10,12 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @EnableWebMvc
 public class MvcConfig implements WebMvcConfigurer {
     @Override
-    public void addViewControllers(ViewControllerRegistry registry) {
+    public void addViewControllers(final ViewControllerRegistry registry) {
         registry.addViewController("/login").setViewName("/login/login");
     }
 
     @Override
-    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+    public void addResourceHandlers(final ResourceHandlerRegistry registry) {
         registry.addResourceHandler("/images/**")
                 .addResourceLocations("classpath:/static/images/");
         registry.addResourceHandler("/static/**")

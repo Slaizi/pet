@@ -27,15 +27,20 @@ public class RegistrationController {
     private final UserService userService;
 
     @GetMapping
-    public String getRegistrationForm (@ModelAttribute(name = "user") UserDto userDto) {
+    public String getRegistrationForm(
+            @ModelAttribute(name = "user") final UserDto userDto
+    ) {
         return REGISTRATION_PAGE;
     }
+
     @PostMapping
-    public String registration (@Valid UserDto userDto,
-                                BindingResult bindingResult,
-                                Model model) {
+    public String registration(
+            @Valid final UserDto userDto,
+            final BindingResult bindingResult,
+            final Model model) {
         if (bindingResult.hasErrors()) {
-            Map<String, String> errorMap = ControllerUtils.getErrors(bindingResult);
+            Map<String, String> errorMap =
+                    ControllerUtils.getErrors(bindingResult);
             model.mergeAttributes(errorMap);
             return REGISTRATION_PAGE;
         }
