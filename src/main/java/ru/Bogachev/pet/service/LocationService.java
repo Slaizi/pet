@@ -10,5 +10,5 @@ public interface LocationService {
     Map<LocationDto, WeatherDto> getWeatherDataForUserLocations(User user);
     void addUserLocation(User user, String nameLocation);
     Location getById(Long id);
-    void deleteUserLocation(Long userId, Long id);
+    void deleteLocation(Long userId, Long id);
 }

@@ -46,7 +46,7 @@ public class MainController {
             @RequestParam(name = "locationId") final Long locationId
     ) {
         User user = userService.getById(userDetails.getId());
-        locationService.deleteUserLocation(user.getId(), locationId);
+        locationService.deleteLocation(user.getId(), locationId);
         return REDIRECT_BASE_PATH;
     }
 
