@@ -73,10 +73,14 @@ public class LocationServiceImpl implements LocationService {
             final User user,
             final String nameLocation
     ) {
-        LocationApiResponse locationResponse = weatherApiService
-                .getLocationByName(nameLocation).get(0);
-        if (locationResponse != null) {
-            handleLocationResponse(user, locationResponse);
+        List<LocationApiResponse> locationResponse = weatherApiService
+                .getLocationByName(nameLocation);
+        if (!locationResponse.isEmpty()) {
+            handleLocationResponse(user, locationResponse.get(0));
+        } else {
+            throw new ResourceNotFoundException(
+                    "Location not found."
+            );
         }
     }
 
@@ -87,16 +91,21 @@ public class LocationServiceImpl implements LocationService {
     ) {
         Optional<Location> existingLocation = locationRepository
                 .findByName(locationResponse.getName());
-        if (existingLocation.isEmpty()) {
-            Location location = saveLocation(locationResponse);
-            locationRepository
-                    .assignLocation(user.getId(), location.getId());
-        }
-        if (existingLocation.isPresent()) {
-            Location location = existingLocation.get();
-            handleExistingLocation(user, location);
+
+        Location location = existingLocation.orElseGet(
+                () -> saveLocation(locationResponse)
+        );
+
+        boolean userHasTheLocation = locationRepository
+                .locationHasUser(
+                        user.getId(),
+                        location.getId()
+                );
+        if (!userHasTheLocation) {
+            locationRepository.assignLocation(user.getId(), location.getId());
         }
     }
+
     @Cacheable(
             value = "LocationService::getById",
             key = "#location.id"
@@ -110,34 +119,22 @@ public class LocationServiceImpl implements LocationService {
         return locationRepository.save(location);
     }
 
-    @Transactional
-    private void handleExistingLocation(
-            final User user,
-            final Location location
-    ) {
-        boolean userHasTheLocation = locationRepository
-                .locationHasUser(user.getId(), location.getId());
-        if (!userHasTheLocation) {
-            locationRepository
-                    .assignLocation(user.getId(), location.getId());
-        }
-    }
-
     @Override
     @CacheEvict(
             value = "LocationService::getById",
             key = "#id"
     )
     @Transactional
-    public void deleteUserLocation(
+    public void deleteLocation(
             final Long userId,
-            final Long id
+            final Long locationId
     ) {
-        List<User> usersByLocationId = userService.getAllUsersByLocationId(id);
+        List<User> usersByLocationId = userService
+                .getAllUsersByLocationId(locationId);
         if (usersByLocationId.size() == 1) {
-            locationRepository.deleteById(id);
+            locationRepository.deleteById(locationId);
         } else {
-            locationRepository.removeLocation(userId, id);
+            locationRepository.unlinkLocation(userId, locationId);
         }
 
     }

@@ -43,7 +43,7 @@ public interface LocationRepository extends JpaRepository<Location, Long> {
             WHERE ul.user_id = :userId
             AND ul.location_id = :locationId
             """, nativeQuery = true)
-    void removeLocation(@Param("userId") Long userId,
+    void unlinkLocation(@Param("userId") Long userId,
                         @Param("locationId") Long locationId);
 
 }
